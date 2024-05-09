@@ -26,17 +26,17 @@ function ExpandableTextArea({ value, setValue }) {
 
 export default function TweetInputArea({ value, setValue }) {
   return (
-    <div class="rounded-xl bg-white w-full border focus-within:border-black shadow-sm">
-      <div class="flex p-4">
+    <div className="rounded-xl bg-white w-full border focus-within:border-black shadow-sm">
+      <div className="flex p-4">
         <div>
           <img
-            class="rounded-full w-10"
+            className="rounded-full w-10"
             alt="Avatar"
             src="https://static.vecteezy.com/ti/vecteur-libre/t2/9292244-icone-d-avatar-par-defaut-vecteur-de-l-utilisateur-des-medias-sociaux-vectoriel.jpg"
           />
         </div>
 
-        <div class="ml-3 flex flex-col w-full">
+        <div className="ml-3 flex flex-col w-full">
           <ExpandableTextArea value={value} setValue={setValue} />
         </div>
       </div>
