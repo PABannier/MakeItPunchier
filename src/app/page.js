@@ -15,7 +15,7 @@ export default function Home() {
   const [tweet, setTweet] = useState("");
   const [vibe, setVibe] = useState("Professional");
   const [loading, setLoading] = useState(false);
-  const [generatedTweet, setGeneratedTweet] = useState("");
+  const [generatedTweets, setGeneratedTweets] = useState("");
   const [isGPT, setIsGPT] = useState(false);
 
   const tweetRef = useRef(null);
@@ -27,12 +27,22 @@ export default function Home() {
   };
 
   const getPrompt = () => {
-    return `Make this tweet punchier in a ${vibe.toLowerCase()} way: ${tweet}`;
+    const numCharacters = tweet.length;
+    const adjective = {
+      Professional: "professional",
+      Casual: "relaxed",
+      Funny: "silly",
+    }[vibe];
+    const mainInstruction = `Generate 3 punchier versions of the following tweet, with no hashtags and clearly labeled "1.", "2." and "3.". Only return these 3 versions, nothing else.`;
+    const guidelines = `Make sure the tweets are each ${numCharacters} character long. You can add emojis.`;
+    const toneGuideline = `Make the tweet sound ${adjective}.`;
+    const context = `Here is the tweet: ${tweet}`;
+    return `${mainInstruction}\n\n${guidelines}\n${toneGuideline}\n\n${context}`;
   };
 
   const generateTweet = async (e) => {
     e.preventDefault();
-    setGeneratedTweet("");
+    setGeneratedTweets("");
     setLoading(true);
 
     const response = await fetch(isGPT ? "/api/openai" : "/api/togetherai", {
@@ -48,7 +58,6 @@ export default function Home() {
     if (!response.ok) {
       console.error(response);
       toast("An error occurred. Please try again later.", { icon: "🚨" });
-      // throw new Error(response.statusText);
     }
 
     // This data is a ReadableStream
@@ -62,7 +71,7 @@ export default function Home() {
         const data = event.data;
         try {
           const text = JSON.parse(data).text ?? "";
-          setGeneratedTweet((prev) => prev + text);
+          setGeneratedTweets((prev) => prev + text);
         } catch (e) {
           console.error(e);
         }
@@ -74,7 +83,7 @@ export default function Home() {
         const data = event.data;
         try {
           const text = JSON.parse(data).choices[0].text ?? "";
-          setGeneratedTweet((prev) => prev + text);
+          setGeneratedTweets((prev) => prev + text);
         } catch (e) {
           console.error(e);
         }
@@ -134,29 +143,36 @@ export default function Home() {
         <hr className="h-px bg-gray-700 border-1 dark:bg-gray-700" />
         <Toaster toastOptions={{ duration: 3000 }} />
         <div className="space-y-10 my-10">
-          {generatedTweet && (
+          {generatedTweets && (
             <>
               <div>
                 <h2
                   className="sm:text-4xl text-3xl font-bold text-slate-900 mx-auto"
                   ref={tweetRef}
                 >
-                  Your tweet is ready!
+                  Your tweets are ready!
                 </h2>
               </div>
               <div className="space-y-8 flex flex-col items-center justify-center max-w-xl mx-auto">
-                <div
-                  className="bg-white rounded-xl shadow-md p-4 hover:bg-gray-100 transition cursor-copy border"
-                  onClick={() => {
-                    navigator.clipboard.writeText(generatedTweet);
-                    toast("Tweet copied to clipboard", {
-                      icon: "✂️",
-                    });
-                  }}
-                  key={generatedTweet}
-                >
-                  <p>{generatedTweet}</p>
-                </div>
+                {generatedTweets
+                  .substring(generatedTweets.indexOf("1") + 3)
+                  .split(/2\.|3\./)
+                  .map((generatedTweet) => {
+                    return (
+                      <div
+                        className="bg-white rounded-xl shadow-md p-4 hover:bg-gray-100 transition cursor-copy border"
+                        onClick={() => {
+                          navigator.clipboard.writeText(generatedTweet);
+                          toast("Tweet copied to clipboard", {
+                            icon: "✂️",
+                          });
+                        }}
+                        key={generatedTweet}
+                      >
+                        <p>{generatedTweet}</p>
+                      </div>
+                    );
+                  })}
               </div>
             </>
           )}
