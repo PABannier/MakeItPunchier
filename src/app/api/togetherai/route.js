@@ -7,9 +7,7 @@ if (!process.env.TOGETHER_API_KEY) {
   throw new Error("Missing env var from Together.ai");
 }
 
-export const config = {
-  runtime: "edge",
-};
+export const runtime = "edge";
 
 const together = new Together({
   auth: process.env.TOGETHER_API_KEY,

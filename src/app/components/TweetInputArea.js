@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 function ExpandableTextArea({ value, setValue }) {
   return (
     <div
@@ -29,6 +31,7 @@ export default function TweetInputArea({ value, setValue }) {
         <div>
           <img
             class="rounded-full w-10"
+            alt="Avatar"
             src="https://static.vecteezy.com/ti/vecteur-libre/t2/9292244-icone-d-avatar-par-defaut-vecteur-de-l-utilisateur-des-medias-sociaux-vectoriel.jpg"
           />
         </div>
